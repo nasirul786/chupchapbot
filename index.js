@@ -71,15 +71,15 @@ function isTarget(userId, username, whisper) {
 
 bot.command("start", async (ctx) => {
   await ctx.reply(
-    `🤫 *WhisperBot*\n\n` +
-    `Send secret messages that only a specific person can read\\!\n\n` +
-    `*How to use:*\n` +
-    `1\\. Type \`@${ctx.me.username}\` in any chat\n` +
-    `2\\. Enter: \`<user\\_id or @username> <your message>\`\n` +
-    `3\\. Select the result to send it\n\n` +
-    `Only the intended recipient can reveal the message\\. ` +
-    `Both sender and recipient can delete it\\.`,
-    { parse_mode: "MarkdownV2" }
+    `🤫 <b>WhisperBot</b>\n\n` +
+    `Send secret messages that only a specific person can read!\n\n` +
+    `<b>How to use:</b>\n` +
+    `1. Type <code>@${ctx.me.username}</code> in any chat\n` +
+    `2. Enter: <code>&lt;user_id or @username&gt; &lt;your message&gt;</code>\n` +
+    `3. Select the result to send it\n\n` +
+    `Only the intended recipient can reveal the message. ` +
+    `Both sender and recipient can delete it.`,
+    { parse_mode: "HTML" }
   );
 });
 
@@ -143,8 +143,8 @@ bot.on("inline_query", async (ctx) => {
         title: `🤫 Whisper to ${targetLabel}`,
         description: "Tap to send this secret whisper",
         input_message_content: {
-          message_text: `🤫 *A whisper for ${targetLabel}*\n\nOnly ${targetLabel} can open this message\\.`,
-          parse_mode: "MarkdownV2",
+          message_text: `🤫 <b>A whisper for ${targetLabel}</b>\n\nOnly ${targetLabel} can open this message.`,
+          parse_mode: "HTML",
         },
         reply_markup: keyboard,
       },
@@ -172,7 +172,7 @@ bot.on("callback_query:data", async (ctx) => {
     }
 
 
-    if (!isTarget(userId, username, whisper)) {
+    if (!isAuthorised(userId, whisper) && !isTarget(userId, username, whisper)) {
       return ctx.answerCallbackQuery({
         text: "🚫 You are not allowed to open this whisper!",
         show_alert: true,
@@ -181,7 +181,7 @@ bot.on("callback_query:data", async (ctx) => {
 
 
     return ctx.answerCallbackQuery({
-      text: `💬 From ${whisper.senderName}:\n\n${whisper.message}`,
+      text: whisper.message,
       show_alert: true,
     });
   }
@@ -211,8 +211,8 @@ bot.on("callback_query:data", async (ctx) => {
 
 
     try {
-      await ctx.editMessageText("🗑 _This whisper has been deleted\\._", {
-        parse_mode: "MarkdownV2",
+      await ctx.editMessageText("🗑 <i>This whisper has been deleted.</i>", {
+        parse_mode: "HTML",
       });
     } catch {
 
